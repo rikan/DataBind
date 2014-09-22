@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>DataBind Test</title>
+    <script src="Scripts/jquery-2.1.1.js"></script>
+    <script src="Scripts/src/DataBind.js"></script>
+</head>
+<body>
+    <p>You have asked for <span data-bind='text: "gifts().length"'>&nbsp;</span> gift(s)</p>
+    <p>You have asked for <span data-bind='text: "items"'>&nbsp;</span></p>
+    <table data-bind='visible: "gifts().length > 0"'>
+        <thead>
+            <tr>
+                <th>Gift name</th>
+                <th>Price</th>
+                <th />
+            </tr>
+        </thead>
+        <tbody data-bind='foreach: "gifts()"'>
+            <tr>
+                <td data-bind='text: "name"'></td>
+                <td data-bind='text: "price"'></td>
+                <td><a href='#' data-bind='click: "removeGift"'>Delete</a></td>
+            </tr>
+        </tbody>
+    </table>
+    <input type="text" class="name" />
+    <input type="text" class="price" />
+    <button data-bind='click: "addGift"'>Add Gift</button>
+    <button data-bind='enable: "gifts().length === 0"' type='submit'>Submit</button>
+    <script type="text/javascript">
+        var GiftModel = function (gifts) {
+            var self = this;
+            self.arr = []
+            self.gifts = function () {
+                return self.arr;
+            };
+
+            self.addGift = function () {
+                self.gifts().push({
+                    name: $(".name").val(),
+                    price: $(".price").val()
+                });
+                TT.DB.DataBind.ApplyRender();
+            };
+            self.removeGift = function () {
+                var data = this.data("context")["$self"];
+                $.each(self.arr, function (key, value) {
+                    if (data === value) self.arr.splice(key, 1);
+                });
+                TT.DB.DataBind.ApplyRender();
+            };
+
+            self.items = [1, 2, 3, 4]
+        };
+        var viewModel = new GiftModel();
+
+        TT.DB.DataBind.ApplyBind($("body"), viewModel);
+        TT.DB.DataBind.ApplyRender();
+    </script>
+</body>
+
+</html>
